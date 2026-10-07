@@ -6,7 +6,7 @@
  *  ⚠️ REEMPLAZA esta URL con la de tu implementación /exec
  * ============================================================
  */
-const API_URL = 'https://script.google.com/macros/s/TU_DEPLOYMENT_ID/exec';
+const API_URL = 'https://script.googleusercontent.com/macros/echo?user_content_key=AUkAhnQ-zUzUz8ahCSNVoH8cTbEWjhQjKA-ECr7Q6ENxpaGNP4_Zbnv0bIAuFqNmXLK3C7x07lEwLKWDICmADn2sFmim6l2yw72xP-J5nZ_XKGY9sqnBulJhf6jqpjiMZ8iZYU8wc5u6cxLbdh8GZSdIsWSBdW8mRiJuNMTW2_ptLwzPFBa-BiivRXbRVUNZy2byuk7id6Gi-f4QIcwIi9c2T3DfCPiO0qq3crMucMUXuJ_8N4GVrNU60q1pabxQL3F6MO95TdSmr6HCfIoAEEsxNinlQsg1Gw&lib=MqzpnpKQXI6-7R1puCMPz8jkmKwee5e9k';
 
 /* ------------------------------------------------------------
    TABS
