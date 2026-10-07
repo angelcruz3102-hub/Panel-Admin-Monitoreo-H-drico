@@ -1,6 +1,6 @@
 /* ============================================================
-   SISTEMA DE MONITOREO HÍDRICO — Estilos Panel Admin
-   Mobile-first · Paleta limpia azul/cyan
+   PANEL ADMIN · MONITOREO HÍDRICO
+   Mobile-first · Paleta azul agua
    ============================================================ */
 
 :root {
@@ -109,9 +109,7 @@ body {
   transition: all 0.2s ease;
   font-family: inherit;
 }
-
 .tab:hover { color: var(--primary); }
-
 .tab.active {
   background: var(--primary);
   color: #fff;
@@ -176,10 +174,6 @@ form {
   box-shadow: 0 0 0 4px rgba(30, 136, 229, 0.12);
 }
 
-.field input:invalid:not(:placeholder-shown) {
-  border-color: var(--error);
-}
-
 /* ---------- BOTÓN ---------- */
 .btn-primary {
   margin-top: 6px;
@@ -196,19 +190,12 @@ form {
   font-family: inherit;
   letter-spacing: 0.3px;
 }
-
 .btn-primary:hover:not(:disabled) {
   transform: translateY(-1px);
   box-shadow: 0 6px 18px rgba(30, 136, 229, 0.4);
 }
-
 .btn-primary:active:not(:disabled) { transform: translateY(0); }
-
-.btn-primary:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-  box-shadow: none;
-}
+.btn-primary:disabled { opacity: 0.6; cursor: not-allowed; box-shadow: none; }
 
 /* ---------- TOAST ---------- */
 .toast {
@@ -227,11 +214,7 @@ form {
   transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
   z-index: 999;
   max-width: 90vw;
-  display: flex;
-  align-items: center;
-  gap: 10px;
 }
-
 .toast.show { transform: translateX(-50%) translateY(0); }
 .toast.error {
   background: var(--error-bg);
@@ -239,10 +222,8 @@ form {
   border-left-color: var(--error);
 }
 
-/* ---------- RESPONSIVE ---------- */
 @media (min-width: 640px) {
   .brand h1 { font-size: 1.35rem; }
-  .subtitle { font-size: 0.8rem; }
   form { padding: 28px; }
   .tab { font-size: 1rem; }
 }
