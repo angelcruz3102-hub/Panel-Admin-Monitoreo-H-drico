@@ -1,23 +1,19 @@
 /**
  * ============================================================
  *  MONITOREO HÍDRICO — App Admin
- *  Envío de datos al backend de Google Apps Script
- * ============================================================
- *  ⚠️ REEMPLAZA esta URL con la de tu implementación /exec
+ *  ⚠️ Reemplaza la URL con la de tu implementación /exec
  * ============================================================
  */
 const API_URL = 'https://script.googleusercontent.com/macros/echo?user_content_key=AUkAhnQ-zUzUz8ahCSNVoH8cTbEWjhQjKA-ECr7Q6ENxpaGNP4_Zbnv0bIAuFqNmXLK3C7x07lEwLKWDICmADn2sFmim6l2yw72xP-J5nZ_XKGY9sqnBulJhf6jqpjiMZ8iZYU8wc5u6cxLbdh8GZSdIsWSBdW8mRiJuNMTW2_ptLwzPFBa-BiivRXbRVUNZy2byuk7id6Gi-f4QIcwIi9c2T3DfCPiO0qq3crMucMUXuJ_8N4GVrNU60q1pabxQL3F6MO95TdSmr6HCfIoAEEsxNinlQsg1Gw&lib=MqzpnpKQXI6-7R1puCMPz8jkmKwee5e9k';
 
 /* ------------------------------------------------------------
-   TABS — Cambio entre Lluvias y Presas
+   TABS
 ------------------------------------------------------------ */
 document.querySelectorAll('.tab').forEach(tab => {
   tab.addEventListener('click', () => {
     const target = tab.dataset.tab;
-
     document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
     document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
-
     tab.classList.add('active');
     document.getElementById(`panel-${target}`).classList.add('active');
   });
@@ -32,7 +28,6 @@ function toLocalISO(date) {
          `T${pad(date.getHours())}:${pad(date.getMinutes())}`;
 }
 
-// Pre-cargar fecha/hora actual en ambos formularios
 document.addEventListener('DOMContentLoaded', () => {
   const now = toLocalISO(new Date());
   document.getElementById('ll_fecha').value = now;
@@ -44,7 +39,6 @@ function showToast(message, isError = false) {
   toast.textContent = (isError ? '❌ ' : '✅ ') + message;
   toast.classList.toggle('error', isError);
   toast.classList.add('show');
-
   clearTimeout(toast._timer);
   toast._timer = setTimeout(() => toast.classList.remove('show'), 3500);
 }
@@ -56,8 +50,6 @@ function setLoading(button, loading, textOriginal = '💾 Guardar Datos') {
 
 /* ------------------------------------------------------------
    ENVÍO AL BACKEND
-   Nota: se usa "text/plain" para evitar el preflight CORS
-   que Google Apps Script no maneja bien.
 ------------------------------------------------------------ */
 async function enviarDatos(tipo, data) {
   const response = await fetch(API_URL, {
@@ -68,22 +60,19 @@ async function enviarDatos(tipo, data) {
   });
 
   if (!response.ok) throw new Error('Error de red al contactar al servidor.');
-
   const result = await response.json();
   if (!result.ok) throw new Error(result.error || 'Error desconocido del servidor.');
   return result;
 }
 
-/* ============================================================
-   FORMULARIO: LLUVIAS POR ESTACIÓN
-   Payload: { tipo: "lluvias", data: { Fecha, Estacion, Milimetros } }
-   ============================================================ */
+/* ------------------------------------------------------------
+   FORM: LLUVIAS
+------------------------------------------------------------ */
 const formLluvias = document.getElementById('formLluvias');
 
 formLluvias.addEventListener('submit', async (e) => {
   e.preventDefault();
 
-  // Validación nativa del formulario
   if (!formLluvias.checkValidity()) {
     formLluvias.reportValidity();
     showToast('Completa todos los campos correctamente.', true);
@@ -95,12 +84,11 @@ formLluvias.addEventListener('submit', async (e) => {
 
   const formData = new FormData(formLluvias);
   const data = {
-    Fecha:       formData.get('Fecha'),
-    Estacion:    formData.get('Estacion'),
-    Milimetros:  parseFloat(formData.get('Milimetros'))
+    Fecha:      formData.get('Fecha'),
+    Estacion:   formData.get('Estacion'),
+    Milimetros: parseFloat(formData.get('Milimetros'))
   };
 
-  // Validación adicional (por seguridad)
   if (isNaN(data.Milimetros) || data.Milimetros < 0) {
     showToast('Ingresa un valor válido de lluvia en mm.', true);
     setLoading(btn, false);
@@ -119,10 +107,9 @@ formLluvias.addEventListener('submit', async (e) => {
   }
 });
 
-/* ============================================================
-   FORMULARIO: NIVEL DE PRESAS
-   Payload: { tipo: "presas", data: { Fecha, Nombre_Presa, Nivel_Operacion, Porcentaje_Util } }
-   ============================================================ */
+/* ------------------------------------------------------------
+   FORM: PRESAS
+------------------------------------------------------------ */
 const formPresas = document.getElementById('formPresas');
 
 formPresas.addEventListener('submit', async (e) => {
@@ -145,10 +132,10 @@ formPresas.addEventListener('submit', async (e) => {
 
   const formData = new FormData(formPresas);
   const data = {
-    Fecha:            formData.get('Fecha'),
-    Nombre_Presa:     formData.get('Nombre_Presa'),
-    Nivel_Operacion:  parseFloat(formData.get('Nivel_Operacion')),
-    Porcentaje_Util:  pct
+    Fecha:           formData.get('Fecha'),
+    Nombre_Presa:    formData.get('Nombre_Presa'),
+    Nivel_Operacion: parseFloat(formData.get('Nivel_Operacion')),
+    Porcentaje_Util: pct
   };
 
   try {
