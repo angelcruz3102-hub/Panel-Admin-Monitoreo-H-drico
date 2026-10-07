@@ -9,7 +9,7 @@
 const API_URL = 'https://script.googleusercontent.com/macros/echo?user_content_key=AUkAhnQ-zUzUz8ahCSNVoH8cTbEWjhQjKA-ECr7Q6ENxpaGNP4_Zbnv0bIAuFqNmXLK3C7x07lEwLKWDICmADn2sFmim6l2yw72xP-J5nZ_XKGY9sqnBulJhf6jqpjiMZ8iZYU8wc5u6cxLbdh8GZSdIsWSBdW8mRiJuNMTW2_ptLwzPFBa-BiivRXbRVUNZy2byuk7id6Gi-f4QIcwIi9c2T3DfCPiO0qq3crMucMUXuJ_8N4GVrNU60q1pabxQL3F6MO95TdSmr6HCfIoAEEsxNinlQsg1Gw&lib=MqzpnpKQXI6-7R1puCMPz8jkmKwee5e9k';
 
 /* ------------------------------------------------------------
-   TABS
+   TABS — Cambio entre Lluvias y Presas
 ------------------------------------------------------------ */
 document.querySelectorAll('.tab').forEach(tab => {
   tab.addEventListener('click', () => {
@@ -28,11 +28,11 @@ document.querySelectorAll('.tab').forEach(tab => {
 ------------------------------------------------------------ */
 function toLocalISO(date) {
   const pad = n => String(n).padStart(2, '0');
-  return `${date.getFullYear()}-${pad(date.getMonth()+1)}-${pad(date.getDate())}` +
+  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}` +
          `T${pad(date.getHours())}:${pad(date.getMinutes())}`;
 }
 
-// Pre-cargar la fecha/hora actual
+// Pre-cargar fecha/hora actual en ambos formularios
 document.addEventListener('DOMContentLoaded', () => {
   const now = toLocalISO(new Date());
   document.getElementById('ll_fecha').value = now;
@@ -56,29 +56,34 @@ function setLoading(button, loading, textOriginal = '💾 Guardar Datos') {
 
 /* ------------------------------------------------------------
    ENVÍO AL BACKEND
+   Nota: se usa "text/plain" para evitar el preflight CORS
+   que Google Apps Script no maneja bien.
 ------------------------------------------------------------ */
 async function enviarDatos(tipo, data) {
   const response = await fetch(API_URL, {
     method: 'POST',
     mode: 'cors',
-    headers: { 'Content-Type': 'text/plain;charset=utf-8' }, // evita preflight CORS
+    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
     body: JSON.stringify({ tipo, data })
   });
 
   if (!response.ok) throw new Error('Error de red al contactar al servidor.');
+
   const result = await response.json();
   if (!result.ok) throw new Error(result.error || 'Error desconocido del servidor.');
   return result;
 }
 
-/* ------------------------------------------------------------
-   FORM: LLUVIAS
------------------------------------------------------------- */
+/* ============================================================
+   FORMULARIO: LLUVIAS POR ESTACIÓN
+   Payload: { tipo: "lluvias", data: { Fecha, Estacion, Milimetros } }
+   ============================================================ */
 const formLluvias = document.getElementById('formLluvias');
 
 formLluvias.addEventListener('submit', async (e) => {
   e.preventDefault();
 
+  // Validación nativa del formulario
   if (!formLluvias.checkValidity()) {
     formLluvias.reportValidity();
     showToast('Completa todos los campos correctamente.', true);
@@ -90,11 +95,17 @@ formLluvias.addEventListener('submit', async (e) => {
 
   const formData = new FormData(formLluvias);
   const data = {
-    Fecha:        formData.get('Fecha'),
-    Estacion:     formData.get('Estacion'),
-    Cuenca:       formData.get('Cuenca'),
-    Milimetros:   parseFloat(formData.get('Milimetros'))
+    Fecha:       formData.get('Fecha'),
+    Estacion:    formData.get('Estacion'),
+    Milimetros:  parseFloat(formData.get('Milimetros'))
   };
+
+  // Validación adicional (por seguridad)
+  if (isNaN(data.Milimetros) || data.Milimetros < 0) {
+    showToast('Ingresa un valor válido de lluvia en mm.', true);
+    setLoading(btn, false);
+    return;
+  }
 
   try {
     const res = await enviarDatos('lluvias', data);
@@ -108,9 +119,10 @@ formLluvias.addEventListener('submit', async (e) => {
   }
 });
 
-/* ------------------------------------------------------------
-   FORM: PRESAS
------------------------------------------------------------- */
+/* ============================================================
+   FORMULARIO: NIVEL DE PRESAS
+   Payload: { tipo: "presas", data: { Fecha, Nombre_Presa, Nivel_Operacion, Porcentaje_Util } }
+   ============================================================ */
 const formPresas = document.getElementById('formPresas');
 
 formPresas.addEventListener('submit', async (e) => {
@@ -123,7 +135,7 @@ formPresas.addEventListener('submit', async (e) => {
   }
 
   const pct = parseFloat(document.getElementById('pr_pct').value);
-  if (pct < 0 || pct > 100) {
+  if (isNaN(pct) || pct < 0 || pct > 100) {
     showToast('El porcentaje útil debe estar entre 0 y 100.', true);
     return;
   }
@@ -133,10 +145,10 @@ formPresas.addEventListener('submit', async (e) => {
 
   const formData = new FormData(formPresas);
   const data = {
-    Fecha:             formData.get('Fecha'),
-    Nombre_Presa:      formData.get('Nombre_Presa'),
-    Nivel_Operacion:   parseFloat(formData.get('Nivel_Operacion')),
-    Porcentaje_Util:   pct
+    Fecha:            formData.get('Fecha'),
+    Nombre_Presa:     formData.get('Nombre_Presa'),
+    Nivel_Operacion:  parseFloat(formData.get('Nivel_Operacion')),
+    Porcentaje_Util:  pct
   };
 
   try {
