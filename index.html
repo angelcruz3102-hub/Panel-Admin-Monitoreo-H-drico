@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Panel Admin · Monitoreo Hídrico</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-inner">
+    <div class="brand">
+      <span class="brand-icon">💧</span>
+      <div>
+        <h1>Monitoreo Hídrico</h1>
+        <p class="subtitle">Panel de Administración · Registro de datos</p>
+      </div>
+    </div>
+    <div class="status" id="statusIndicator">
+      <span class="dot"></span> En línea
+    </div>
+  </div>
+</header>
+
+<main class="container">
+
+  <!-- Tabs -->
+  <nav class="tabs">
+    <button class="tab active" data-tab="lluvias">🌧️ Lluvia por Estación</button>
+    <button class="tab" data-tab="presas">🏞️ Nivel de Presas</button>
+  </nav>
+
+  <!-- Formulario Lluvias -->
+  <section class="panel active" id="panel-lluvias">
+    <form id="formLluvias" novalidate>
+      <div class="field">
+        <label for="ll_fecha">Fecha y hora</label>
+        <input type="datetime-local" id="ll_fecha" name="Fecha" required>
+      </div>
+
+      <div class="field">
+        <label for="ll_estacion">Estación</label>
+        <select id="ll_estacion" name="Estacion" required>
+          <option value="">— Selecciona una estación —</option>
+          <option value="Estación Norte">Estación Norte</option>
+          <option value="Estación Sur">Estación Sur</option>
+          <option value="Estación Este">Estación Este</option>
+          <option value="Estación Oeste">Estación Oeste</option>
+          <option value="Estación Central">Estación Central</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label for="ll_cuenca">Cuenca</label>
+        <select id="ll_cuenca" name="Cuenca" required>
+          <option value="">— Selecciona una cuenca —</option>
+          <option value="Cuenca Alta">Cuenca Alta</option>
+          <option value="Cuenca Media">Cuenca Media</option>
+          <option value="Cuenca Baja">Cuenca Baja</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label for="ll_mm">Milímetros (mm)</label>
+        <input type="number" id="ll_mm" name="Milimetros" min="0" step="0.1" placeholder="Ej: 12.5" required>
+      </div>
+
+      <button type="submit" class="btn-primary">💾 Guardar Datos</button>
+    </form>
+  </section>
+
+  <!-- Formulario Presas -->
+  <section class="panel" id="panel-presas">
+    <form id="formPresas" novalidate>
+      <div class="field">
+        <label for="pr_fecha">Fecha y hora</label>
+        <input type="datetime-local" id="pr_fecha" name="Fecha" required>
+      </div>
+
+      <div class="field">
+        <label for="pr_presa">Nombre de la Presa</label>
+        <select id="pr_presa" name="Nombre_Presa" required>
+          <option value="">— Selecciona una presa —</option>
+          <option value="Presa El Cajón">Presa El Cajón</option>
+          <option value="Presa La Yesca">Presa La Yesca</option>
+          <option value="Presa Aguamilpa">Presa Aguamilpa</option>
+          <option value="Presa Infiernillo">Presa Infiernillo</option>
+          <option value="Presa Chicoasén">Presa Chicoasén</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label for="pr_nivel">Nivel de Operación (m)</label>
+        <input type="number" id="pr_nivel" name="Nivel_Operacion" min="0" step="0.01" placeholder="Ej: 215.40" required>
+      </div>
+
+      <div class="field">
+        <label for="pr_pct">Porcentaje Útil (%)</label>
+        <input type="number" id="pr_pct" name="Porcentaje_Util" min="0" max="100" step="0.1" placeholder="Ej: 78.5" required>
+      </div>
+
+      <button type="submit" class="btn-primary">💾 Guardar Datos</button>
+    </form>
+  </section>
+
+</main>
+
+<!-- Toast de notificaciones -->
+<div id="toast" class="toast"></div>
+
+<script src="app.js"></script>
+</body>
+</html>
